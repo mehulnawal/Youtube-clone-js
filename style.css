@@ -384,12 +384,11 @@ header:hover #title .fa-youtube {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 32px;
     flex-wrap: wrap;
     gap: 16px;
     color: #fff;
     padding: 1.6rem 2rem;
-    margin-top: 6rem;
+    margin-top: 8rem;
 
     .page-title {
         display: flex;
@@ -446,6 +445,18 @@ header:hover #title .fa-youtube {
     .clear-all-btn:hover {
         background-color: #e74c3c;
         transform: translateY(-1px);
+    }
+}
+
+@media (max-width:576px) {
+    .page-header {
+        margin-top: 10rem;
+    }
+}
+
+@media (max-width:400px) {
+    .page-header {
+        margin-top: 13rem;
     }
 }
 
