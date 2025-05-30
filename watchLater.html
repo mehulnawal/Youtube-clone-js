@@ -5,6 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Watch Later</title>
+    <meta name="description" content="Youtube Watch Later">
+    <meta name="keywords"
+        content="HTML, CSS, JavaScript, Youtube, Youtube clone website, youtube website, watch laster, youtube watch later">
+
 
     <link rel="shortcut icon" href="./yt-Favicons.png">
 
@@ -80,7 +84,7 @@
                     <div class="d-flex align-items-center justify-content-start gap-3">
                         <label class="" for="">Search Inputs</label>
                         <select name="" id="categoriesOfSearch" class="form-select">
-                            <option value="Category">Category</option>
+                            <option value="category">Category</option>
                         </select>
                     </div>
                     <!-- </div> -->
@@ -129,7 +133,6 @@
         create options dynamically ✅
         */
 
-        let get = JSON.parse(localStorage.getItem("WatchLater"));
         let card = "";
         let videoBody = document.getElementById("videoBody");
         let noWatchLater = document.getElementById("noWatchLater");
@@ -140,11 +143,12 @@
         let msg = "";
 
         function creatingCard() {
+            let get = JSON.parse(localStorage.getItem("WatchLater"));
             if (get.length > 0 || get) {
                 videoGrid.style.display = "block";
                 get.forEach((value, index) => {
 
-                    card += `<div class="col-4">
+                    card += `<div class="col-lg-4 col-md-6 col-12 mt-4">
                         <div class="video-card" data-category="tech" data-duration="645" data-views="${value.views}"
                         data-added="2024-01-20">
                         <div class="video-thumbnail">
@@ -238,7 +242,7 @@
                 get.filter((value) => {
                     if (value["channel"].toLowerCase().includes(input)) {
 
-                        card += `<div class="col-4">
+                        card += `<div class="col-lg-4 col-md-6 col-12 mt-4">
                         <div class="video-card" data-category="tech" data-duration="645" data-views="${value.views}"
                         data-added="2024-01-20">
                         <div class="video-thumbnail">
@@ -284,14 +288,15 @@
         function filtering() {
             categoriesOfSearch.addEventListener("change", function () {
                 let options = categoriesOfSearch.value.toLowerCase();
+                // console.log(options);
                 let get = JSON.parse(localStorage.getItem("WatchLater"));
                 videoBody.innerHTML = "";
                 card = "";
+                if (options != "category") {
+                    get.filter((value) => {
+                        if (value["search-value"].toLowerCase().includes(options)) {
 
-                get.filter((value) => {
-                    if (value["search-value"].toLowerCase().includes(options)) {
-
-                        card += `<div class="col-4">
+                            card += `<div class="col-lg-4 col-md-5 col-12 mt-4">
                         <div class="video-card" data-category="tech" data-duration="645" data-views="${value.views}"
                         data-added="2024-01-20">
                         <div class="video-thumbnail">
@@ -318,12 +323,15 @@
                     </div>
                 </div>`;
 
-                        videoBody.innerHTML = card;
-                    }
-                })
+                            videoBody.innerHTML = card;
+                        }
+                    })
+                }
+                else {
+                    creatingCard();
+                }
             });
         };
-
         filtering();
 
         // on clicking redirect to original yt
@@ -338,7 +346,6 @@
             })
         }
         redirectVideos();
-
 
         let toastBody = document.getElementById("toastBody");
         function toastAnimation(msg) {

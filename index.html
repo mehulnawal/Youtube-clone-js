@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Youtube Search App">
+    <meta name="keywords" content="HTML, CSS, JavaScript, Youtube, Youtube clone website, youtube website">
     <title>Youtube Search App</title>
 
     <link rel="shortcut icon" href="./yt-Favicons.png">
@@ -30,14 +32,13 @@
                 <div id="title" class="d-flex gap-2 align-items-center">
                     <i class="fa-brands fa-youtube"></i>
                     <h1 class="mb-0">
-                        <a class="text-decoration-none" href="./index.html">Youtube Watch
-                            Later</a>
+                        <a class="text-decoration-none" href="./index.html">Youtube Search App</a>
                     </h1>
                 </div>
             </div>
 
             <!-- search -->
-            <div class="col-lg-4 col-md-6 col-6 mt-4">
+            <div class="col-lg-4 col-md-6 col-12 mt-4">
                 <div type="button" id="search" class="d-flex align-items-center">
                     <!-- <div class="row">
                         div.col- -->
@@ -91,8 +92,7 @@
         <p>Type something in the search bar and hit Enter.</p>
     </div>
 
-    <div id="toastBody">
-    </div>
+    <div id="toastBody"></div>
 
     <!-- video card -->
     <div id="videosHead">
@@ -334,6 +334,15 @@
         </div>
     </div>
 
+    <!-- loader  -->
+    <div id="loaderMain" class="fs-3 text-center text-danger fw-bold">
+        Loading..
+    </div>
+
+    <div id="showWarning" style="display: flex;justify-content: center;align-items: center;flex-direction: column;">
+        <h2><i class="fa-regular fa-magnifying-glass"></i> Quota Exceeded. Please Try Again Later</h2>
+        <p>YouTube API provides limited daily usage. The quota will reset automatically after 24 hours.</p>
+    </div>
 
     <!-- custom js -->
     <script src="./script.js"></script>

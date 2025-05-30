@@ -14,12 +14,12 @@ toast animation on performing any functionality ✅
 music on saving watch later✅
 search and filter in watch later ✅
 show search in - dropdown✅
-also if quota is finished for that day then is should show warning 
+if data if taking time in fetch - a message should be displayed - show loader ✅
+responsiveness ✅
+// on selecting category then entering value in input the data is not fetched(); ✅
+also if quota is finished for that day then is should show warning ✅
 add to proper videos in watch later
 can remove from watch later
-if data if taking time in fetch - a message should be displayed - show loader
-// on selecting category then entering value in input the data is not fetched();
-//nav-tabs option - to toggle between shorts and videos (using duration);
 */
 
 // theme toggle
@@ -32,6 +32,8 @@ let watchLaterIcon = document.getElementById("watchLaterIcon");
 let title = document.querySelector("#title h1");
 let search = document.querySelector("#search input");
 let noResultMessages = document.querySelector("#noResultMessage");
+let loaderMain = document.getElementById("loaderMain");
+let loader = true;
 
 watchLaterIcon.addEventListener('click', function () {
     window.location.href = "watchLater.html";
@@ -123,14 +125,29 @@ let searchValue = "";
 let videoBody = document.getElementById("videoBody");
 let videoArray = [];
 
-searchInput.addEventListener("keypress", function (event) {
+document.getElementById("showWarning").style.display = "none";
+
+searchInput.addEventListener("keypress", async function (event) {
     searchValue = searchInput.value;
     for (let card of categoryCard) {
         card.classList.remove("categoryCardToggle")
     }
     if (event.key == "Enter") {
         videoBody.innerHTML = "";
-        loadSearchData();
+        loaderMain.style.display = "block";
+
+        try {
+            await loadSearchData();
+            loaderMain.style.display = "none";
+        } catch (error) {
+            document.getElementById("showWarning").style.display = "block";
+            loaderMain.style.display = "block";
+        }
+
+        // if (loader == true) {
+        // }
+        // else {
+        // }
     }
 });
 
@@ -148,6 +165,12 @@ let searchDiv = document.getElementById("searchDiv");
 searchDiv.addEventListener("click", function () {
     videoBody.innerHTML = "";
     loadSearchData();
+    if (loader == true) {
+        loaderMain.style.display = "none";
+    }
+    else {
+        loaderMain.style.display = "block";
+    }
 });
 
 function categorySearchValue() {
@@ -170,6 +193,9 @@ let minutesData = "";
 let secondsData = "";
 
 async function loadSearchData() {
+
+
+    loader = false;
     noResultMessage.style.display = "none"
     let maxVideo = 50;
     const apiKey = "AIzaSyCVKvuOKkrK5rA2nRcoiqWzj1aDWf422Ts";
@@ -227,7 +253,7 @@ async function loadSearchData() {
                     title = tileValue.slice(0, 50) + "..";
                 }
 
-                card += `<div class="col-lg-4 col-6">
+                card += `<div class="col-lg-4 col-md-6 col-12">
                 <div class="videoCard">
                     <div class="videoThumbnail">
                         <img src="${sValue["snippet"]["thumbnails"]["high"]["url"]}"
@@ -329,7 +355,9 @@ async function loadSearchData() {
 
         statsFunc(videoIdApi);
     }
+
 };
+
 
 function durationFun(duration) {
     let hours = duration.indexOf("H");
