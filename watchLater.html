@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watch Later</title>
+
+    <link rel="shortcut icon" href="./yt-Favicons.png">
+
+    <!-- bootstrap css cdn -->
+    <link rel="stylesheet" href="	https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css">
+
+    <!-- Font Awesome Pro -->
+    <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.4.2/css/all.css">
+
+    <!-- custom css  -->
+    <link rel="stylesheet" href="./style.css">
+
+</head>
+
+<body>
+    <!-- navbar -->
+    <header class="">
+        <div class="row align-items-center">
+
+            <div class="col-6">
+                <div id="title" class="d-flex gap-2 align-items-center">
+                    <i class="fa-brands fa-youtube"></i>
+                    <h1 class="mb-0">
+                        <a class="text-decoration-none text-white" href="./index.html">Youtube Watch
+                            Later</a>
+                    </h1>
+                </div>
+            </div>
+
+            <!-- search -->
+            <div class="col-6">
+                <div type="button" id="watchLaterSearch" class="d-flex align-items-center">
+                    <!-- <div class="row">
+                        div.col- -->
+                    <input type="text" name="searchInput" id="watchLaterSearchInput"
+                        placeholder="Search by channel name" autocomplete="off">
+                    <div id="searchDiv">
+                        <i class="fa-regular fa-magnifying-glass" id="watchLaterMagnifyingGlass"></i>
+                    </div>
+                    <!-- </div> -->
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!--  -->
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <div class="page-title">
+                <i class="fas fa-clock"></i>
+                <h1>Watch Later</h1>
+            </div>
+            <div class="page-subtitle"> <span id="totalNumberOfVideos">0</span> videos</div>
+        </div>
+        <div class="page-actions">
+            <button class="clear-all-btn" id="ClearAllBtn">
+                <i class="fas fa-trash"></i>
+                Clear All
+            </button>
+        </div>
+    </div>
+
+    <div id="controlsPanel">
+        <div id="controlsHead">
+            <div class="row">
+                <div class="col-12 d-flex align-items-center justify-content-start gap-3">
+                    <!-- <div class="row align-items-center"> -->
+                    <div class="mb-0">
+                        <div>Filter by: </div>
+                    </div>
+
+                    <div class="d-flex align-items-center justify-content-start gap-3">
+                        <label class="" for="">Search Inputs</label>
+                        <select name="" id="categoriesOfSearch" class="form-select">
+                            <option value="Category">Category</option>
+                        </select>
+                    </div>
+                    <!-- </div> -->
+                </div>
+
+                <!-- <div class="col-6 d-flex justify-content-end">
+                    <div>
+                        <div id="totalVideos">12</div> Videos
+                    </div>
+
+                    <div>
+                        <div id="totalVideos">2h 45m</div> total
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Video Grid -->
+    <div class="video-grid" id="videoGrid">
+        <div class="row" id="videoBody">
+        </div>
+    </div>
+
+    <div id="noSearchResultFound" style="text-align: center; padding: 2rem;display: none;">
+        <i class="fa-solid fa-circle-xmark" style="font-size: 2rem; color: gray;"></i>
+        <p style="margin-top: 1rem;">Enter correct channel name</p>
+        <p>Channel not found</p>
+    </div>
+
+    <div id="noVideos" style="text-align: center; padding: 2rem;">
+        <i class="fa-regular fa-clock" style="font-size: 2rem; color: gray;"></i>
+        <p style="margin-top: 1rem;">Your Watch Later list is empty.</p>
+        <p>Start saving videos to see them here.</p>
+    </div>
+
+    <div id="toastBody">
+    </div>
+
+    <script>
+        /*
+        searching and filtering ✅ ( check searching);
+        show correct video details 
+        toast animation with sound effects ✅
+        on clicking redirect to original video ✅
+        create options dynamically ✅
+        */
+
+        let get = JSON.parse(localStorage.getItem("WatchLater"));
+        let card = "";
+        let videoBody = document.getElementById("videoBody");
+        let noWatchLater = document.getElementById("noWatchLater");
+        let totalNumberOfVideos = document.getElementById("totalNumberOfVideos");
+        let noVideos = document.getElementById("noVideos");
+        let videoGrid = document.getElementById("videoGrid");
+        let index = 0;
+        let msg = "";
+
+        function creatingCard() {
+            if (get.length > 0 || get) {
+                videoGrid.style.display = "block";
+                get.forEach((value, index) => {
+
+                    card += `<div class="col-4">
+                        <div class="video-card" data-category="tech" data-duration="645" data-views="${value.views}"
+                        data-added="2024-01-20">
+                        <div class="video-thumbnail">
+                        <img src="${value.thumbnail}"
+                            alt="Video Thumbnail">
+                        <div class="video-duration">${value.videoDuration}</div>
+                        <div class="play-overlay">
+                            <button class="play-btn" videoId = ${value.videoId}>
+                                <i class="fas fa-play" style="margin-left: 3px;"></i>
+                            </button>
+                        </div>
+                        </div>
+                        <div class="video-info">
+                        <h3 class="video-title">${value.title}</h3>
+                        <div class="video-channel">${value.channel}</div>
+                        <div class="video-meta">${value.views} • ${value.uploaded}</div>
+                        <div class="video-actions videoActions">
+                            <button class="action-button danger removeVideoBtn" valueIndex = ${index}>
+                                <i class="fas fa-trash"></i>
+                                Remove
+                            </button>
+                        </div>
+                        </div>
+                    </div>
+                </div>`;
+
+                    videoBody.innerHTML = card;
+                    index++;
+
+                    let removeVideoBtn = document.querySelectorAll('.removeVideoBtn');
+                    for (let removeBtn of removeVideoBtn) {
+                        removeBtn.addEventListener("click", function () {
+                            let videoIndex = removeBtn.getAttribute("value-index");
+
+                            let get = JSON.parse(localStorage.getItem("WatchLater"));
+                            get.forEach((value, index) => {
+                                get.splice(videoIndex, 1);
+                            });
+                            localStorage.setItem("WatchLater", JSON.stringify(get))
+                        });
+                    };
+                })
+
+                totalNumberOfVideos.innerText = get.length;
+                noVideos.style.display = "none";
+            }
+            else {
+                noWatchLater.style.display = "block";
+                totalNumberOfVideos.innerText = 0;
+            }
+        }
+        creatingCard();
+
+        let ClearAllBtn = document.getElementById("ClearAllBtn");
+        ClearAllBtn.addEventListener("click", function () {
+            noVideos.style.display = "block";
+            localStorage.clear();
+            card = "";
+            videoBody.innerHTML = "";
+            videoGrid.style.display = "none";
+            msg = "Watch Later is cleared";
+            toastAnimation(msg);
+        });
+
+
+        let categoriesOfSearch = document.getElementById("categoriesOfSearch");
+        // let defaultOption = "";
+        function createOption() {
+            // defaultOption = `<option value="">Category</option>`;
+            // categoriesOfSearch.innerHTML += defaultOption;
+            let get = JSON.parse(localStorage.getItem("WatchLater"));
+            get.forEach((values) => {
+                let element = document.createElement("option");
+                element = `<option value=${values["search-value"]}>${values["search-value"]}</option>`;
+                categoriesOfSearch.innerHTML += element;
+            })
+        };
+
+        createOption();
+
+        // searching
+        let noSearchResultFound = document.getElementById("noSearchResultFound");
+        function searching() {
+            let watchLaterSearchInput = document.getElementById("watchLaterSearchInput");
+            watchLaterSearchInput.addEventListener("input", function () {
+                let input = watchLaterSearchInput.value;
+                let get = JSON.parse(localStorage.getItem("WatchLater"));
+                videoBody.innerHTML = "";
+                card = "";
+
+                get.filter((value) => {
+                    if (value["channel"].toLowerCase().includes(input)) {
+
+                        card += `<div class="col-4">
+                        <div class="video-card" data-category="tech" data-duration="645" data-views="${value.views}"
+                        data-added="2024-01-20">
+                        <div class="video-thumbnail">
+                        <img src="${value.thumbnail}"
+                            alt="Video Thumbnail">
+                        <div class="video-duration">${value.videoDuration}</div>
+                        <div class="play-overlay">
+                            <button class="play-btn">
+                                <i class="fas fa-play" style="margin-left: 3px;"></i>
+                            </button>
+                        </div>
+                        </div>
+                        <div class="video-info">
+                        <h3 class="video-title">${value.title}</h3>
+                        <div class="video-channel">${value.channel}</div>
+                        <div class="video-meta">${value.views} • ${value.uploaded}</div>
+                        <div class="video-actions videoActions">
+                            <button class="action-button danger removeVideoBtn" valueIndex = ${index}>
+                                <i class="fas fa-trash"></i>
+                                Remove
+                            </button>
+                        </div>
+                        </div>
+                    </div>
+                </div>`;
+
+                        videoBody.innerHTML = card;
+
+                        noSearchResultFound.style.display = "none";
+
+                    }
+
+                    else {
+                        noSearchResultFound.style.display = "block";
+                    }
+                })
+            });
+        };
+
+        searching();
+
+        // filtering
+        function filtering() {
+            categoriesOfSearch.addEventListener("change", function () {
+                let options = categoriesOfSearch.value.toLowerCase();
+                let get = JSON.parse(localStorage.getItem("WatchLater"));
+                videoBody.innerHTML = "";
+                card = "";
+
+                get.filter((value) => {
+                    if (value["search-value"].toLowerCase().includes(options)) {
+
+                        card += `<div class="col-4">
+                        <div class="video-card" data-category="tech" data-duration="645" data-views="${value.views}"
+                        data-added="2024-01-20">
+                        <div class="video-thumbnail">
+                        <img src="${value.thumbnail}"
+                            alt="Video Thumbnail">
+                        <div class="video-duration">${value.videoDuration}</div>
+                        <div class="play-overlay">
+                            <button class="play-btn">
+                                <i class="fas fa-play" style="margin-left: 3px;"></i>
+                            </button>
+                        </div>
+                        </div>
+                        <div class="video-info">
+                        <h3 class="video-title">${value.title}</h3>
+                        <div class="video-channel">${value.channel}</div>
+                        <div class="video-meta">${value.views} • ${value.uploaded}</div>
+                        <div class="video-actions videoActions">
+                            <button class="action-button danger removeVideoBtn" valueIndex = ${index}>
+                                <i class="fas fa-trash"></i>
+                                Remove
+                            </button>
+                        </div>
+                        </div>
+                    </div>
+                </div>`;
+
+                        videoBody.innerHTML = card;
+                    }
+                })
+            });
+        };
+
+        filtering();
+
+        // on clicking redirect to original yt
+        function redirectVideos() {
+            let playBtn = document.querySelectorAll(".play-btn");
+
+            playBtn.forEach((values) => {
+                values.addEventListener("click", function () {
+                    let id = values.getAttribute("videoId");
+                    window.location.href = `https://www.youtube.com/watch?v=${id}`;
+                });
+            })
+        }
+        redirectVideos();
+
+
+        let toastBody = document.getElementById("toastBody");
+        function toastAnimation(msg) {
+            let audio = new Audio("woosh-soundEffect.mp3");
+            audio.play();
+            let toast = document.createElement("div");
+            toast.classList.add("toastCard");
+            toast.innerHTML = `<i class="fa-solid fa-trash-xmark"></i>${msg}`;
+            toastBody.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+    </script>
+
+</body>
+
+</html>
