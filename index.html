@@ -10,7 +10,6 @@
 
     <link rel="shortcut icon" href="./yt-Favicons.png">
 
-
     <!-- bootstrap css cdn -->
     <link rel="stylesheet" href="	https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css">
 
@@ -20,84 +19,89 @@
     <!-- custom css  -->
     <link rel="stylesheet" href="./style.css">
 
+    <!-- Locomotive css -->
+    <link rel="stylesheet" href="./locomotive-scroll-css.css">
+
 </head>
 
 <body>
 
-    <!-- navbar -->
-    <header class="">
-        <div class="row align-items-center">
+    <div id="mainLocomotive" data-scroll-container>
 
-            <div class="col-lg-4 mt-2 col-12">
-                <div id="title" class="d-flex gap-2 align-items-center">
-                    <i class="fa-brands fa-youtube"></i>
-                    <h1 class="mb-0">
-                        <a class="text-decoration-none" href="./index.html">Youtube Search App</a>
-                    </h1>
+        <!-- navbar -->
+        <header class="">
+            <div class="row align-items-center">
+
+                <div class="col-lg-4 mt-2 col-12">
+                    <div id="title" class="d-flex gap-2 align-items-center">
+                        <i class="fa-brands fa-youtube"></i>
+                        <h1 class="mb-0">
+                            <a class="text-decoration-none" href="./index.html">Youtube Search App</a>
+                        </h1>
+                    </div>
                 </div>
-            </div>
 
-            <!-- search -->
-            <div class="col-lg-4 col-md-6 col-12 mt-4">
-                <div type="button" id="search" class="d-flex align-items-center">
-                    <!-- <div class="row">
+                <!-- search -->
+                <div class="col-lg-4 col-md-6 col-12 mt-4">
+                    <div type="button" id="search" class="d-flex align-items-center">
+                        <!-- <div class="row">
                         div.col- -->
-                    <input type="text" name="searchInput" id="searchInput" placeholder="Search" autocomplete="off">
-                    <div id="searchDiv">
-                        <i class="fa-regular fa-magnifying-glass" id="magnifyingGlass"></i>
+                        <input type="text" name="searchInput" id="searchInput" placeholder="Search" autocomplete="off">
+                        <div id="searchDiv">
+                            <i class="fa-regular fa-magnifying-glass" id="magnifyingGlass"></i>
+                        </div>
+                        <!-- </div> -->
                     </div>
-                    <!-- </div> -->
                 </div>
-            </div>
 
-            <!-- headerIcons -->
-            <div class="col-lg-4 col-md-6 col-6 mt-4 d-flex justify-content-lg-start justify-content-end">
-                <div id="headerIcons">
-                    <i class="fa-solid fa-moon" id="darkTheme"></i>
-                    <i class="fa-solid fa-sun" id="lightTheme"></i>
-                    <div class="position-relative">
-                        <i class="fa-solid fa-clock" id="watchLaterIcon"></i>
-                        <div class="position-absolute" id="watchLaterAmt">0</div>
+                <!-- headerIcons -->
+                <div class="col-lg-4 col-md-6 col-6 mt-4 d-flex justify-content-lg-start justify-content-end">
+                    <div id="headerIcons">
+                        <i class="fa-solid fa-moon" id="darkTheme"></i>
+                        <i class="fa-solid fa-sun" id="lightTheme"></i>
+                        <div class="position-relative">
+                            <i class="fa-solid fa-clock" id="watchLaterIcon"></i>
+                            <div class="position-absolute" id="watchLaterAmt">0</div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- category -->
-            <div class="col-12">
-                <div id="category">
-                    <!-- <div class="container"> -->
-                    <div id="categoryHead" class="d-flex align-items-center">
-                        <div class="categoryCard">Gaming</div>
-                        <div class="categoryCard">Movies</div>
-                        <div class="categoryCard">Tmkoc</div>
-                        <div class="categoryCard">Javascript</div>
-                        <div class="categoryCard">React</div>
-                        <div class="categoryCard">Html</div>
-                        <div class="categoryCard">Css</div>
-                        <div class="categoryCard">Bootstrap</div>
-                        <div class="categoryCard">Tawilwind</div>
-                        <div class="categoryCard">Frontend Development</div>
-                        <div class="categoryCard">Backend Development</div>
-                        <div class="categoryCard">Jethalal</div>
-                        <div class="categoryCard">Music</div>
+                <!-- category -->
+                <div class="col-12">
+                    <div id="category">
+                        <!-- <div class="container"> -->
+                        <div id="categoryHead" class="d-flex align-items-center">
+                            <div class="categoryCard">Gaming</div>
+                            <div class="categoryCard">Movies</div>
+                            <div class="categoryCard">Tmkoc</div>
+                            <div class="categoryCard">Javascript</div>
+                            <div class="categoryCard">React</div>
+                            <div class="categoryCard">Html</div>
+                            <div class="categoryCard">Css</div>
+                            <div class="categoryCard">Bootstrap</div>
+                            <div class="categoryCard">Tawilwind</div>
+                            <div class="categoryCard">Frontend Development</div>
+                            <div class="categoryCard">Backend Development</div>
+                            <div class="categoryCard">Jethalal</div>
+                            <div class="categoryCard">Music</div>
+                        </div>
+                        <!-- </div> -->
                     </div>
-                    <!-- </div> -->
                 </div>
             </div>
+        </header>
+
+        <div id="noResultMessage">
+            <h2><i class="fa-regular fa-magnifying-glass"></i> Search to see videos</h2>
+            <p>Type something in the search bar and hit Enter.</p>
         </div>
-    </header>
 
-    <div id="noResultMessage">
-        <h2><i class="fa-regular fa-magnifying-glass"></i> Search to see videos</h2>
-        <p>Type something in the search bar and hit Enter.</p>
-    </div>
+        <div id="toastBody"></div>
 
-    <div id="toastBody"></div>
-
-    <!-- video card -->
-    <div id="videosHead">
-        <div class="row" id="videoBody">
-            <!-- <div class="col-lg-4 col-md-6 col-12">
+        <!-- video card -->
+        <div id="videosHead">
+            <div class="row" id="videoBody">
+                <!-- <div class="col-lg-4 col-md-6 col-12">
                 <div class="videoCard">
                     <div class="videoThumbnail">
                         <img src="https://i.ytimg.com/vi/zDgaUzJX5RU/hqdefault.jpg" alt="">
@@ -331,21 +335,34 @@
                     </div>
                 </div>
             </div> -->
+            </div>
         </div>
+
+        <!-- loader  -->
+        <div id="loaderMain" class="fs-3 text-center text-danger fw-bold">
+            Loading..
+        </div>
+
+        <div id="showWarning" style="display: flex;justify-content: center;align-items: center;flex-direction: column;">
+            <h2><i class="fa-regular fa-magnifying-glass"></i> Quota Exceeded. Please Try Again Later</h2>
+            <p>YouTube API provides limited daily usage. The quota will reset automatically after 24 hours.</p>
+        </div>
+
     </div>
 
-    <!-- loader  -->
-    <div id="loaderMain" class="fs-3 text-center text-danger fw-bold">
-        Loading..
-    </div>
-
-    <div id="showWarning" style="display: flex;justify-content: center;align-items: center;flex-direction: column;">
-        <h2><i class="fa-regular fa-magnifying-glass"></i> Quota Exceeded. Please Try Again Later</h2>
-        <p>YouTube API provides limited daily usage. The quota will reset automatically after 24 hours.</p>
-    </div>
 
     <!-- custom js -->
     <script src="./script.js"></script>
+
+    <!-- Locomotive js -->
+    <!-- <script src="./locomotive-scroll-js.js"></script> -->
+    <script>
+        const scroll = new LocomotiveScroll({
+            el: document.querySelector('[data-scroll-container]'),
+            smooth: true,
+            duration: 0.3,
+        });
+    </script>
 
 </body>
 

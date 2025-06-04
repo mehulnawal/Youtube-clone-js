@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PromptCrafter - AI Prompt Engineering Tool</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --dark-bg: #1a1d29;
+            --dark-card: #252837;
+            --dark-text: #e2e8f0;
+        }
+
+        [data-theme="dark"] {
+            background-color: var(--dark-bg) !important;
+            color: var(--dark-text) !important;
+        }
+
+        [data-theme="dark"] .card {
+            background-color: var(--dark-card) !important;
+            border-color: #374151 !important;
+            color: var(--dark-text) !important;
+        }
+
+        [data-theme="dark"] .form-control,
+        [data-theme="dark"] .form-select {
+            background-color: var(--dark-card) !important;
+            border-color: #374151 !important;
+            color: var(--dark-text) !important;
+        }
+
+        [data-theme="dark"] .btn-outline-primary {
+            color: #667eea;
+            border-color: #667eea;
+        }
+
+        [data-theme="dark"] .btn-outline-primary:hover {
+            background-color: #667eea;
+            color: white;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .gradient-text {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-gradient {
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+
+        .prompt-editor {
+            min-height: 200px;
+            resize: vertical;
+            border-radius: 15px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .prompt-editor:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        .template-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 15px;
+        }
+
+        .template-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .quality-indicator {
+            height: 8px;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #0abde3);
+            transition: all 0.3s ease;
+        }
+
+        .simulated-response {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .tag {
+            background: var(--success-gradient);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin: 2px;
+            display: inline-block;
+        }
+
+        .saved-prompt-item {
+            transition: all 0.3s ease;
+            border-radius: 15px;
+        }
+
+        .saved-prompt-item:hover {
+            background-color: #f8f9fa;
+            transform: translateX(10px);
+        }
+
+        .floating-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--secondary-gradient);
+            border: none;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .floating-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .animated-bg {
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .floating-btn {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg glass-card m-3">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold gradient-text fs-3" href="#">
+                <i class="fas fa-magic me-2"></i>PromptCrafter
+            </a>
+            <div class="d-flex align-items-center">
+                <button class="btn btn-outline-primary me-2" onclick="toggleTheme()">
+                    <i class="fas fa-moon" id="theme-icon"></i>
+                </button>
+                <button class="btn btn-outline-primary me-2" onclick="showSettings()">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <button class="btn btn-gradient" onclick="exportPrompts()">
+                    <i class="fas fa-download me-1"></i>Export
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid px-4">
+        <div class="row">
+            <!-- Left Panel - Editor -->
+            <div class="col-lg-8">
+                <div class="card glass-card mb-4 fade-in">
+                    <div class="card-header bg-transparent border-0">
+                        <h5 class="gradient-text mb-0">
+                            <i class="fas fa-edit me-2"></i>Prompt Editor
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Tone</label>
+                                <select class="form-select" id="toneSelect" onchange="updatePromptStyle()">
+                                    <option value="">Select Tone</option>
+                                    <option value="friendly">Friendly</option>
+                                    <option value="formal">Formal</option>
+                                    <option value="witty">Witty</option>
+                                    <option value="professional">Professional</option>
+                                    <option value="casual">Casual</option>
+                                    <option value="academic">Academic</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Output Format</label>
+                                <select class="form-select" id="formatSelect" onchange="updatePromptStyle()">
+                                    <option value="">Select Format</option>
+                                    <option value="paragraph">Paragraph</option>
+                                    <option value="bullets">Bullet Points</option>
+                                    <option value="code">Code</option>
+                                    <option value="list">Numbered List</option>
+                                    <option value="table">Table</option>
+                                    <option value="json">JSON</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Font Size</label>
+                                <select class="form-select" id="fontSizeSelect" onchange="updateFontSize()">
+                                    <option value="14">Small (14px)</option>
+                                    <option value="16" selected>Medium (16px)</option>
+                                    <option value="18">Large (18px)</option>
+                                    <option value="20">Extra Large (20px)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <textarea class="form-control prompt-editor" id="promptEditor"
+                            placeholder="Write your AI prompt here... Be specific and clear about what you want the AI to do."
+                            onkeyup="analyzePrompt()"></textarea>
+
+                        <div class="mt-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="fw-semibold">Prompt Quality</span>
+                                <span id="qualityScore" class="badge bg-secondary">0/100</span>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar quality-indicator" id="qualityBar" role="progressbar"
+                                    style="width: 0%"></div>
+                            </div>
+                            <div id="qualityTips" class="mt-2 small text-muted"></div>
+                        </div>
+
+                        <div class="mt-3 d-flex flex-wrap gap-2">
+                            <button class="btn btn-gradient" onclick="generateSimulatedResponse()">
+                                <i class="fas fa-eye me-1"></i>Preview Response
+                            </button>
+                            <button class="btn btn-outline-primary" onclick="savePrompt()">
+                                <i class="fas fa-save me-1"></i>Save Prompt
+                            </button>
+                            <button class="btn btn-outline-success" onclick="clearEditor()">
+                                <i class="fas fa-trash me-1"></i>Clear
+                            </button>
+                            <button class="btn btn-outline-info" onclick="sharePrompt()">
+                                <i class="fas fa-share me-1"></i>Share
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Simulated Response Viewer -->
+                <div id="simulatedResponseSection" class="fade-in" style="display: none;">
+                    <div class="simulated-response">
+                        <h6 class="fw-bold mb-3">
+                            <i class="fas fa-robot me-2"></i>Simulated AI Response Preview
+                        </h6>
+                        <div id="simulatedResponse"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Templates & Library -->
+            <div class="col-lg-4">
+                <!-- Templates -->
+                <div class="card glass-card mb-4 fade-in">
+                    <div class="card-header bg-transparent border-0">
+                        <h6 class="gradient-text mb-0">
+                            <i class="fas fa-layer-group me-2"></i>Prompt Templates
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-2" id="templatesContainer">
+                            <!-- Templates will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Saved Prompts Library -->
+                <div class="card glass-card mb-4 fade-in">
+                    <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center">
+                        <h6 class="gradient-text mb-0">
+                            <i class="fas fa-bookmark me-2"></i>Saved Prompts
+                        </h6>
+                        <span class="badge bg-primary" id="savedCount">0</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <input type="text" class="form-control" id="searchInput"
+                                placeholder="Search prompts or tags..." onkeyup="searchPrompts()">
+                        </div>
+                        <div class="mb-3">
+                            <select class="form-select" id="filterByTag" onchange="filterByTag()">
+                                <option value="">All Tags</option>
+                            </select>
+                        </div>
+                        <div id="savedPromptsList">
+                            <div class="text-center text-muted">
+                                <i class="fas fa-bookmark-o fa-2x mb-2"></i>
+                                <p>No saved prompts yet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <button class="floating-btn pulse" onclick="scrollToTop()" title="Back to Top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Modals -->
+    <!-- Save Prompt Modal -->
+    <div class="modal fade" id="savePromptModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title gradient-text">Save Prompt</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Prompt Title</label>
+                        <input type="text" class="form-control" id="promptTitle"
+                            placeholder="Enter a descriptive title">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tags (comma-separated)</label>
+                        <input type="text" class="form-control" id="promptTags"
+                            placeholder="writing, creative, business">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" id="promptDescription" rows="3"
+                            placeholder="Brief description of what this prompt does"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-gradient" onclick="confirmSavePrompt()">Save Prompt</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal fade" id="settingsModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title gradient-text">Settings</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Import Prompts</label>
+                        <input type="file" class="form-control" id="importFile" accept=".json"
+                            onchange="importPrompts()">
+                        <small class="text-muted">Import previously exported prompts (JSON format)</small>
+                    </div>
+                    <div class="mb-3">
+                        <button class="btn btn-outline-danger" onclick="clearAllPrompts()">
+                            <i class="fas fa-trash me-1"></i>Clear All Saved Prompts
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script>
+        // In-memory storage (replaces localStorage for this environment)
+        let storage = {
+            prompts: [],
+            settings: {
+                theme: 'light',
+                fontSize: 16
+            }
+        };
+
+        // Prompt templates
+        const templates = [
+            {
+                title: "Creative Writing",
+                icon: "fas fa-pen-fancy",
+                prompt: "Write a creative story about [topic] in [genre] style. Include vivid descriptions and engaging dialogue. The story should be approximately [length] words and have a compelling beginning, middle, and end.",
+                tags: ["creative", "writing", "story"]
+            },
+            {
+                title: "Code Generation",
+                icon: "fas fa-code",
+                prompt: "Generate [programming language] code that [specific functionality]. Include comments explaining the logic, error handling, and provide example usage. Make sure the code follows best practices and is production-ready.",
+                tags: ["coding", "programming", "development"]
+            },
+            {
+                title: "Email Template",
+                icon: "fas fa-envelope",
+                prompt: "Write a professional email for [purpose] to [recipient]. The tone should be [tone] and include [specific details]. Make it concise yet comprehensive, with a clear subject line and call-to-action.",
+                tags: ["email", "business", "professional"]
+            },
+            {
+                title: "Data Analysis",
+                icon: "fas fa-chart-line",
+                prompt: "Analyze the following data: [data/dataset description]. Provide insights on [specific aspects], identify trends, patterns, and anomalies. Present findings in a clear, structured format with actionable recommendations.",
+                tags: ["data", "analysis", "insights"]
+            },
+            {
+                title: "Marketing Copy",
+                icon: "fas fa-bullhorn",
+                prompt: "Create compelling marketing copy for [product/service] targeting [audience]. Highlight key benefits, address pain points, and include a strong call-to-action. The tone should be [tone] and the length should be [length].",
+                tags: ["marketing", "copywriting", "sales"]
+            },
+            {
+                title: "Educational Content",
+                icon: "fas fa-graduation-cap",
+                prompt: "Create educational content explaining [topic] for [target audience]. Use simple language, include examples, and structure the content with clear headings. Add practice questions or exercises at the end.",
+                tags: ["education", "teaching", "learning"]
+            }
+        ];
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function () {
+            loadTemplates();
+            loadSavedPrompts();
+            loadSettings();
+            updateSavedCount();
+        });
+
+        function loadTemplates() {
+            const container = document.getElementById('templatesContainer');
+            container.innerHTML = templates.map(template => `
+                <div class="col-12 mb-2">
+                    <div class="template-card card border-0 bg-light p-2" onclick="useTemplate('${template.prompt}')">
+                        <div class="d-flex align-items-center">
+                            <i class="${template.icon} text-primary me-2"></i>
+                            <small class="fw-semibold">${template.title}</small>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function useTemplate(prompt) {
+            document.getElementById('promptEditor').value = prompt;
+            analyzePrompt();
+        }
+
+        function updatePromptStyle() {
+            const tone = document.getElementById('toneSelect').value;
+            const format = document.getElementById('formatSelect').value;
+
+            if (tone || format) {
+                let currentPrompt = document.getElementById('promptEditor').value;
+                let styleInstructions = [];
+
+                if (tone) styleInstructions.push(`Use a ${tone} tone`);
+                if (format) styleInstructions.push(`Format the response as ${format}`);
+
+                if (styleInstructions.length > 0 && currentPrompt) {
+                    const instructions = styleInstructions.join(' and ') + '.';
+                    if (!currentPrompt.includes(instructions)) {
+                        document.getElementById('promptEditor').value = currentPrompt + '\n\n' + instructions;
+                        analyzePrompt();
+                    }
+                }
+            }
+        }
+
+        function analyzePrompt() {
+            const prompt = document.getElementById('promptEditor').value;
+            let score = 0;
+            let tips = [];
+
+            // Length check
+            if (prompt.length > 50) score += 20;
+            else tips.push("Add more detail to your prompt");
+
+            if (prompt.length > 150) score += 20;
+            else tips.push("Consider expanding your prompt for better results");
+
+            // Specificity check
+            if (prompt.includes('[') && prompt.includes(']')) score += 15;
+            else tips.push("Use [brackets] to indicate variables");
+
+            if (prompt.toLowerCase().includes('please') || prompt.toLowerCase().includes('specifically')) score += 10;
+
+            // Structure check
+            const sentences = prompt.split('.').filter(s => s.trim().length > 0);
+            if (sentences.length >= 3) score += 20;
+            else tips.push("Break down your request into multiple sentences");
+
+            // Action words
+            const actionWords = ['write', 'create', 'generate', 'analyze', 'explain', 'describe', 'list'];
+            if (actionWords.some(word => prompt.toLowerCase().includes(word))) score += 15;
+            else tips.push("Start with a clear action word (write, create, analyze, etc.)");
+
+            // Update UI
+            document.getElementById('qualityScore').textContent = `${Math.min(score, 100)}/100`;
+            document.getElementById('qualityBar').style.width = `${Math.min(score, 100)}%`;
+            document.getElementById('qualityTips').innerHTML = tips.length > 0 ?
+                `<i class="fas fa-lightbulb text-warning"></i> Tips: ${tips.join(', ')}` :
+                `<i class="fas fa-check text-success"></i> Great prompt quality!`;
+        }
+
+        function generateSimulatedResponse() {
+            const prompt = document.getElementById('promptEditor').value;
+            if (!prompt.trim()) {
+                alert('Please enter a prompt first!');
+                return;
+            }
+
+            const responses = [
+                `Based on your prompt, here's a comprehensive response that addresses your key requirements. The content is structured to provide maximum value while maintaining clarity and engagement.
+
+**Key Points:**
+- Detailed analysis of your request
+- Practical implementation steps
+- Best practices and recommendations
+- Examples and use cases
+
+This simulated response demonstrates how an AI might interpret and respond to your prompt. The actual output would depend on the specific AI model and its training data.`,
+
+                `Thank you for your detailed prompt! Here's how an AI might respond:
+
+I understand you're looking for [specific output based on your prompt]. Let me break this down systematically:
+
+1. **Primary Objective**: [Main goal interpretation]
+2. **Approach**: [Methodology explanation]
+3. **Implementation**: [Step-by-step guidance]
+4. **Expected Outcomes**: [Results preview]
+
+*Note: This is a simulated response to help you preview the format and style of potential AI output.*`,
+
+                `Your prompt is well-structured! Here's a sample response:
+
+## Analysis & Response
+
+The request you've made requires careful consideration of several factors. Based on the prompt structure and requirements, here's what a comprehensive AI response might include:
+
+- **Context Understanding**: Clear interpretation of your needs
+- **Detailed Response**: Thorough coverage of all aspects
+- **Actionable Insights**: Practical next steps
+- **Quality Assurance**: Validation of output quality
+
+> Remember: The actual AI response will vary based on the model's capabilities and training data.`
+            ];
+
+            const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+            document.getElementById('simulatedResponse').innerHTML = randomResponse;
+            document.getElementById('simulatedResponseSection').style.display = 'block';
+            document.getElementById('simulatedResponseSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function savePrompt() {
+            const prompt = document.getElementById('promptEditor').value;
+            if (!prompt.trim()) {
+                alert('Please enter a prompt first!');
+                return;
+            }
+
+            document.getElementById('promptTitle').value = '';
+            document.getElementById('promptTags').value = '';
+            document.getElementById('promptDescription').value = '';
+            new bootstrap.Modal(document.getElementById('savePromptModal')).show();
+        }
+
+        function confirmSavePrompt() {
+            const prompt = document.getElementById('promptEditor').value;
+            const title = document.getElementById('promptTitle').value || 'Untitled Prompt';
+            const tags = document.getElementById('promptTags').value.split(',').map(tag => tag.trim()).filter(tag => tag);
+            const description = document.getElementById('promptDescription').value;
+
+            const promptObj = {
+                id: Date.now(),
+                title,
+                prompt,
+                tags,
+                description,
+                createdAt: new Date().toLocaleDateString(),
+                tone: document.getElementById('toneSelect').value,
+                format: document.getElementById('formatSelect').value
+            };
+
+            storage.prompts.push(promptObj);
+            loadSavedPrompts();
+            updateSavedCount();
+            bootstrap.Modal.getInstance(document.getElementById('savePromptModal')).hide();
+
+            // Show success message
+            showToast('Prompt saved successfully!', 'success');
+        }
+
+        function loadSavedPrompts() {
+            const container = document.getElementById('savedPromptsList');
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filterTag = document.getElementById('filterByTag').value;
+
+            let filteredPrompts = storage.prompts;
+
+            if (searchTerm) {
+                filteredPrompts = filteredPrompts.filter(p =>
+                    p.title.toLowerCase().includes(searchTerm) ||
+                    p.prompt.toLowerCase().includes(searchTerm) ||
+                    p.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+                );
+            }
+
+            if (filterTag) {
+                filteredPrompts = filteredPrompts.filter(p => p.tags.includes(filterTag));
+            }
+
+            if (filteredPrompts.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-muted">
+                        <i class="fas fa-search fa-2x mb-2"></i>
+                        <p>No prompts found</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = filteredPrompts.map(prompt => `
+                <div class="saved-prompt-item card border-0 bg-light mb-2 p-3">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6 class="mb-1 fw-semibold">${prompt.title}</h6>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" onclick="loadPrompt(${prompt.id})"><i class="fas fa-edit me-1"></i>Load</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="duplicatePrompt(${prompt.id})"><i class="fas fa-copy me-1"></i>Duplicate</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="#" onclick="deletePrompt(${prompt.id})"><i class="fas fa-trash me-1"></i>Delete</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="small text-muted mb-2">${prompt.prompt.substring(0, 100)}${prompt.prompt.length > 100 ? '...' : ''}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            ${prompt.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+                        <small class="text-muted">${prompt.createdAt}</small>
+                    </div>
+                </div>
+            `).join('');
+
+            updateTagFilter();
+        }
+
+        function updateTagFilter() {
+            const allTags = [...new Set(storage.prompts.flatMap(p => p.tags))];
+            const filterSelect = document.getElementById('filterByTag');
+            const currentValue = filterSelect.value;
+
+            filterSelect.innerHTML = '<option value="">All Tags</option>' +
+                allTags.map(tag => `<option value="${tag}" ${tag === currentValue ? 'selected' : ''}>${tag}</option>`).join('');
+        }
+
+        function searchPrompts() {
+            loadSavedPrompts();
+        }
+
+        function filterByTag() {
+            loadSavedPrompts();
+        }
+
+        function loadPrompt(id) {
+            const prompt = storage.prompts.find(p => p.id === id);
+            if (prompt) {
+                document.getElementById('promptEditor').value = prompt.prompt;
+                if (prompt.tone) document.getElementById('toneSelect').value = prompt.tone;
+                if (prompt.format) document.getElementById('formatSelect').value = prompt.format;
+                analyzePrompt();
+                document.getElementById('promptEditor').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function duplicatePrompt(id) {
+            const prompt = storage.prompts.find(p => p.id === id);
+            if (prompt) {
+                const duplicate = {
+                    ...prompt,
+                    id: Date.now(),
+                    title: prompt.title + ' (Copy)',
+                    createdAt: new Date().toLocaleDateString()
+                };
+                storage.prompts.push(duplicate);
+                loadSavedPrompts();
+                updateSavedCount();
+                showToast('Prompt duplicated successfully!', 'success');
+            }
+        }
+
+        function deletePrompt(id) {
+            if (confirm('Are you sure you want to delete this prompt?')) {
+                storage.prompts = storage.prompts.filter(p => p.id !== id);
+                loadSavedPrompts();
+                updateSavedCount();
+                showToast('Prompt deleted successfully!', 'success');
+            }
+        }
+
+        function updateSavedCount() {
+            document.getElementById('savedCount').textContent = storage.prompts.length;
+        }
+
+        function clearEditor() {
+            if (confirm('Clear the current prompt?')) {
+                document.getElementById('promptEditor').value = '';
+                document.getElementById('toneSelect').value = '';
+                document.getElementById('formatSelect').value = '';
+                document.getElementById('simulatedResponseSection').style.display = 'none';
+                analyzePrompt();
+            }
+        }
+
+        function exportPrompts() {
+            if (storage.prompts.length === 0) {
+                alert('No prompts to export!');
+                return;
+            }
+
+            const dataStr = JSON.stringify(storage.prompts, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `promptcrafter-export-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+            showToast('Prompts exported successfully!', 'success');
+        }
+
+        function importPrompts() {
+            const file = document.getElementById('importFile').files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const importedPrompts = JSON.parse(e.target.result);
+                    if (Array.isArray(importedPrompts)) {
+                        // Add unique IDs to imported prompts to avoid conflicts
+                        importedPrompts.forEach(prompt => {
+                            prompt.id = Date.now() + Math.random();
+                        });
+                        storage.prompts = [...storage.prompts, ...importedPrompts];
+                        loadSavedPrompts();
+                        updateSavedCount();
+                        showToast(`${importedPrompts.length} prompts imported successfully!`, 'success');
+                        bootstrap.Modal.getInstance(document.getElementById('settingsModal')).hide();
+                    } else {
+                        throw new Error('Invalid format');
+                    }
+                } catch (error) {
+                    alert('Error importing prompts. Please check the file format.');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function clearAllPrompts() {
+            if (confirm('Are you sure you want to delete ALL saved prompts? This cannot be undone.')) {
+                storage.prompts = [];
+                loadSavedPrompts();
+                updateSavedCount();
+                showToast('All prompts cleared!', 'warning');
+                bootstrap.Modal.getInstance(document.getElementById('settingsModal')).hide();
+            }
+        }
+
+        function sharePrompt() {
+            const prompt = document.getElementById('promptEditor').value;
+            if (!prompt.trim()) {
+                alert('Please enter a prompt first!');
+                return;
+            }
+
+            // Create shareable URL with encoded prompt
+            const encodedPrompt = encodeURIComponent(prompt);
+            const shareUrl = `${window.location.origin}${window.location.pathname}?prompt=${encodedPrompt}`;
+
+            // Copy to clipboard
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                showToast('Share URL copied to clipboard!', 'info');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = shareUrl;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showToast('Share URL copied to clipboard!', 'info');
+            });
+
+            // Also provide social media share options
+            const shareText = `Check out this AI prompt I created with PromptCrafter: ${prompt.substring(0, 100)}${prompt.length > 100 ? '...' : ''}`;
+            const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+            const linkedinUrl = `https://linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
+
+            // Show share options
+            const shareModal = document.createElement('div');
+            shareModal.innerHTML = `
+                <div class="modal fade" id="shareModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title gradient-text">Share Prompt</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Share URL has been copied to clipboard!</p>
+                                <div class="d-grid gap-2">
+                                    <a href="${twitterUrl}" target="_blank" class="btn btn-primary">
+                                        <i class="fab fa-twitter me-2"></i>Share on Twitter
+                                    </a>
+                                    <a href="${linkedinUrl}" target="_blank" class="btn btn-primary">
+                                        <i class="fab fa-linkedin me-2"></i>Share on LinkedIn
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(shareModal);
+            new bootstrap.Modal(document.getElementById('shareModal')).show();
+
+            // Clean up modal after use
+            document.getElementById('shareModal').addEventListener('hidden.bs.modal', () => {
+                document.body.removeChild(shareModal);
+            });
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.body.getAttribute('data-theme') || 'light';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+
+            document.body.setAttribute('data-theme', newTheme);
+            storage.settings.theme = newTheme;
+
+            const icon = document.getElementById('theme-icon');
+            icon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+
+            showToast(`Switched to ${newTheme} theme`, 'info');
+        }
+
+        function updateFontSize() {
+            const fontSize = document.getElementById('fontSizeSelect').value;
+            document.getElementById('promptEditor').style.fontSize = fontSize + 'px';
+            storage.settings.fontSize = parseInt(fontSize);
+        }
+
+        function showSettings() {
+            new bootstrap.Modal(document.getElementById('settingsModal')).show();
+        }
+
+        function loadSettings() {
+            if (storage.settings.theme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+                document.getElementById('theme-icon').className = 'fas fa-sun';
+            }
+
+            document.getElementById('fontSizeSelect').value = storage.settings.fontSize;
+            document.getElementById('promptEditor').style.fontSize = storage.settings.fontSize + 'px';
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showToast(message, type = 'info') {
+            // Create toast container if it doesn't exist
+            let toastContainer = document.getElementById('toastContainer');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.id = 'toastContainer';
+                toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+                toastContainer.style.zIndex = '1060';
+                document.body.appendChild(toastContainer);
+            }
+
+            const toastId = 'toast_' + Date.now();
+            const toastHtml = `
+                <div id="${toastId}" class="toast align-items-center text-white bg-${type === 'success' ? 'success' : type === 'warning' ? 'warning' : type === 'error' ? 'danger' : 'info'} border-0" role="alert">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : type === 'error' ? 'times-circle' : 'info-circle'} me-2"></i>
+                            ${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                </div>
+            `;
+
+            toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+            const toast = new bootstrap.Toast(document.getElementById(toastId), { delay: 3000 });
+            toast.show();
+
+            // Clean up after toast is hidden
+            document.getElementById(toastId).addEventListener('hidden.bs.toast', () => {
+                document.getElementById(toastId).remove();
+            });
+        }
+
+        // Check for shared prompt in URL
+        document.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const sharedPrompt = urlParams.get('prompt');
+            if (sharedPrompt) {
+                document.getElementById('promptEditor').value = decodeURIComponent(sharedPrompt);
+                analyzePrompt();
+                showToast('Shared prompt loaded!', 'info');
+                // Clean URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        });
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function (e) {
+            // Ctrl/Cmd + S to save
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                savePrompt();
+            }
+
+            // Ctrl/Cmd + Enter to preview
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                generateSimulatedResponse();
+            }
+
+            // Escape to clear
+            if (e.key === 'Escape' && e.target === document.getElementById('promptEditor')) {
+                clearEditor();
+            }
+        });
+
+        // Auto-save draft functionality
+        let autoSaveTimeout;
+        document.getElementById('promptEditor').addEventListener('input', function () {
+            clearTimeout(autoSaveTimeout);
+            autoSaveTimeout = setTimeout(() => {
+                storage.draft = this.value;
+            }, 1000);
+        });
+
+        // Load draft on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            if (storage.draft && !document.getElementById('promptEditor').value) {
+                document.getElementById('promptEditor').value = storage.draft;
+                analyzePrompt();
+            }
+        });
+
+        // Add smooth animations for dynamic content
+        function fadeInElement(element) {
+            element.style.opacity = '0';
+            element.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                element.style.transition = 'all 0.3s ease';
+                element.style.opacity = '1';
+                element.style.transform = 'translateY(0)';
+            }, 10);
+        }
+
+        // Enhanced search with debouncing
+        let searchTimeout;
+        document.getElementById('searchInput').addEventListener('input', function () {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                loadSavedPrompts();
+            }, 300);
+        });
+
+        // Add prompt statistics
+        function getPromptStats() {
+            const prompts = storage.prompts;
+            const totalPrompts = prompts.length;
+            const totalWords = prompts.reduce((sum, p) => sum + p.prompt.split(' ').length, 0);
+            const avgWordsPerPrompt = totalPrompts > 0 ? Math.round(totalWords / totalPrompts) : 0;
+            const allTags = prompts.flatMap(p => p.tags);
+            const uniqueTags = [...new Set(allTags)].length;
+            const mostUsedTag = allTags.length > 0 ?
+                allTags.reduce((a, b, i, arr) =>
+                    arr.filter(v => v === a).length >= arr.filter(v => v === b).length ? a : b
+                ) : 'None';
+
+            return {
+                totalPrompts,
+                totalWords,
+                avgWordsPerPrompt,
+                uniqueTags,
+                mostUsedTag
+            };
+        }
+
+        // Add stats to settings modal
+        document.getElementById('settingsModal').addEventListener('show.bs.modal', function () {
+            const stats = getPromptStats();
+            const statsHtml = `
+                <div class="card bg-light border-0 mb-3">
+                    <div class="card-header bg-transparent">
+                        <h6 class="gradient-text mb-0">
+                            <i class="fas fa-chart-bar me-2"></i>Your Statistics
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-6 col-md-3">
+                                <div class="fw-bold text-primary">${stats.totalPrompts}</div>
+                                <small class="text-muted">Prompts</small>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="fw-bold text-success">${stats.totalWords}</div>
+                                <small class="text-muted">Total Words</small>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="fw-bold text-info">${stats.avgWordsPerPrompt}</div>
+                                <small class="text-muted">Avg Words</small>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="fw-bold text-warning">${stats.uniqueTags}</div>
+                                <small class="text-muted">Unique Tags</small>
+                            </div>
+                        </div>
+                        ${stats.mostUsedTag !== 'None' ? `<div class="text-center mt-2"><small class="text-muted">Most used tag: <span class="tag">${stats.mostUsedTag}</span></small></div>` : ''}
+                    </div>
+                </div>
+            `;
+
+            // Insert stats before existing content
+            const modalBody = document.querySelector('#settingsModal .modal-body');
+            const existingStats = modalBody.querySelector('.card.bg-light');
+            if (existingStats) {
+                existingStats.outerHTML = statsHtml;
+            } else {
+                modalBody.insertAdjacentHTML('afterbegin', statsHtml);
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -109,10 +109,10 @@
         </div>
     </div>
 
-    <div id="noSearchResultFound" style="text-align: center; padding: 2rem;display: none;">
+    <div id="noSearchResultFound" style="text-align: center; padding: 2rem; display: none;">
         <i class="fa-solid fa-circle-xmark" style="font-size: 2rem; color: gray;"></i>
-        <p style="margin-top: 1rem;">Enter correct channel name</p>
-        <p>Channel not found</p>
+        <p style="margin-top: 1rem;">Channel not found </p>
+        <p>Enter correct channel name. Write all letters in lowercase</p>
     </div>
 
     <div id="noVideos" style="text-align: center; padding: 2rem;">
@@ -125,13 +125,6 @@
     </div>
 
     <script>
-        /*
-        searching and filtering ✅ ( check searching);
-        show correct video details 
-        toast animation with sound effects ✅
-        on clicking redirect to original video ✅
-        create options dynamically ✅
-        */
 
         let card = "";
         let videoBody = document.getElementById("videoBody");
@@ -166,7 +159,7 @@
                         <div class="video-channel">${value.channel}</div>
                         <div class="video-meta">${value.views} • ${value.uploaded}</div>
                         <div class="video-actions videoActions">
-                            <button class="action-button danger removeVideoBtn" valueIndex = ${index}>
+                                <button type="button" class="action-button danger removeVideoBtn" data-id="${value.videoId}" valueIndex = ${index}>
                                 <i class="fas fa-trash"></i>
                                 Remove
                             </button>
@@ -178,29 +171,39 @@
                     videoBody.innerHTML = card;
                     index++;
 
+                    // remove video 
                     let removeVideoBtn = document.querySelectorAll('.removeVideoBtn');
                     for (let removeBtn of removeVideoBtn) {
                         removeBtn.addEventListener("click", function () {
                             let videoIndex = removeBtn.getAttribute("value-index");
+                            let id = this.getAttribute("data-id");
+
+
 
                             let get = JSON.parse(localStorage.getItem("WatchLater"));
                             get.forEach((value, index) => {
-                                get.splice(videoIndex, 1);
+                                if (id == value.videoId) {
+                                    get.splice(index, 1);
+                                    removeBtn.closest(".col-lg-4", ".col-md-6", ".col-12", ".mt-4").remove();
+                                }
                             });
-                            localStorage.setItem("WatchLater", JSON.stringify(get))
+                            localStorage.setItem("WatchLater", JSON.stringify(get));
+
+                            toastAnimation("Video removed");
                         });
                     };
                 })
-
-                totalNumberOfVideos.innerText = get.length;
                 noVideos.style.display = "none";
             }
             else {
                 noWatchLater.style.display = "block";
-                totalNumberOfVideos.innerText = 0;
+                // totalNumberOfVideos.innerText = 0;
             }
         }
         creatingCard();
+
+        let get = JSON.parse(localStorage.getItem("WatchLater"));
+        totalNumberOfVideos.innerText = get.length;
 
         let ClearAllBtn = document.getElementById("ClearAllBtn");
         ClearAllBtn.addEventListener("click", function () {
@@ -213,29 +216,35 @@
             toastAnimation(msg);
         });
 
-
         let categoriesOfSearch = document.getElementById("categoriesOfSearch");
         // let defaultOption = "";
         function createOption() {
             // defaultOption = `<option value="">Category</option>`;
             // categoriesOfSearch.innerHTML += defaultOption;
             let get = JSON.parse(localStorage.getItem("WatchLater"));
+            let searchValues = []
             get.forEach((values) => {
-                let element = document.createElement("option");
-                element = `<option value=${values["search-value"]}>${values["search-value"]}</option>`;
-                categoriesOfSearch.innerHTML += element;
-            })
-        };
 
+                if (!searchValues.includes(values["search-value"])) {
+                    searchValues.push(values["search-value"]);
+                    let element = document.createElement("option");
+                    element = `<option value=${values["search-value"]}>${values["search-value"]}</option>`;
+                    categoriesOfSearch.innerHTML += element;
+                }
+            })
+            console.log(searchValues);
+        };
         createOption();
 
         // searching
         let noSearchResultFound = document.getElementById("noSearchResultFound");
         function searching() {
             let watchLaterSearchInput = document.getElementById("watchLaterSearchInput");
+
             watchLaterSearchInput.addEventListener("input", function () {
                 let input = watchLaterSearchInput.value;
                 let get = JSON.parse(localStorage.getItem("WatchLater"));
+                let noFoundDiv = 1;
                 videoBody.innerHTML = "";
                 card = "";
 
@@ -269,17 +278,18 @@
                     </div>
                 </div>`;
 
-                        videoBody.innerHTML = card;
-
-                        noSearchResultFound.style.display = "none";
-
-                    }
-
-                    else {
-                        noSearchResultFound.style.display = "block";
+                        noFoundDiv = 0;
                     }
                 })
+                videoBody.innerHTML = card;
+                if (noFoundDiv == 0) {
+                    noSearchResultFound.style.display = "none";
+                }
+                else {
+                    noSearchResultFound.style.display = "block";
+                }
             });
+
         };
 
         searching();

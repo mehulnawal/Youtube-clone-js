@@ -24,27 +24,28 @@ a {
 
 body {
     transition: all 0.3s ease;
-    scroll-behavior: smooth;
+    /* scroll-behavior: smooth; */
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    padding-bottom: 0.6rem;
+    /* padding-bottom: 0.6rem; */
     background-color: var(--body-bg-color);
     color: var(--white);
-    overflow-x: hidden !important;
-    scrollbar-width: none;
-    scroll-behavior: smooth;
+    /* overflow-x: hidden !important; */
+    /* scrollbar-width: none; */
+    /* scroll-behavior: smooth; */
 }
 
 html,
 body {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    /* scrollbar-width: none; */
+    /* -ms-overflow-style: none; */
 }
 
 html::-webkit-scrollbar,
 body::-webkit-scrollbar {
-    display: none;
+    /* display: none; */
 }
 
+/* #mainLocomotive {} */
 
 /* navbar */
 header {
@@ -55,8 +56,8 @@ header {
     color: var(--primary);
     width: 100%;
     position: fixed;
-    top: 0px;
-    left: 0px;
+    top: 0rem !important;
+    left: 0rem !important;
     z-index: 99;
 
     #title {
@@ -359,7 +360,6 @@ header:hover #title .fa-youtube {
         transform: scale(1.04);
     }
 }
-
 
 #noResultMessage,
 #noResultMessage {

@@ -18,8 +18,8 @@ if data if taking time in fetch - a message should be displayed - show loader �
 responsiveness ✅
 // on selecting category then entering value in input the data is not fetched(); ✅
 also if quota is finished for that day then is should show warning ✅
-add to proper videos in watch later
-can remove from watch later
+add to proper videos in watch later 
+can remove from watch later 
 */
 
 // theme toggle
@@ -201,6 +201,7 @@ async function loadSearchData() {
     const apiKey = "AIzaSyCVKvuOKkrK5rA2nRcoiqWzj1aDWf422Ts";
 
     URL = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=${maxVideo}&q=${searchValue}&type=video&key=${apiKey}`;
+    console.log(URL);
 
     localStorage.removeItem("categoryValue");
 
@@ -288,7 +289,7 @@ async function loadSearchData() {
 
                         <div class="buttons d-flex gap-2 align-items-center">
 
-                            <button type="button" class="saveToWatchLater">
+                            <button type="button" class="saveToWatchLater" data-thumbnail="${sValue["snippet"]["thumbnails"]["high"]["url"]}" data-id="${videoIdApi}" data-title="${title}" data-channel="${sValue["snippet"]["channelTitle"]}" data-view="${viewsData}" data-uploaded="${videoUploadedFunc}" data-duration="${constDuration}">
                                 <i class="fa-regular fa-clock"></i>
                                 <span>Save to watch later</span>
                             </button>
@@ -307,21 +308,22 @@ async function loadSearchData() {
 
                 videoBody.innerHTML = card;
 
-                let obj = {
-                    id: videoId,
-                    videoId: videoIdApi,
-                    thumbnail: sValue["snippet"]["thumbnails"]["high"]["url"],
-                    title: sValue["snippet"]["title"],
-                    channel: sValue["snippet"]["channelTitle"],
-                    views: viewsData,
-                    videoDuration: constDuration,
-                    uploaded: videoUploadedFunc,
-                    "search-value": searchValue,
-                };
-
                 let saveToWatchLater = document.querySelectorAll(".saveToWatchLater");
+                console.log(saveToWatchLater);
                 for (let watchLaterBtn of saveToWatchLater) {
                     watchLaterBtn.addEventListener("click", function () {
+
+                        let obj = {
+                            videoId: this.getAttribute('data-id'),
+                            thumbnail: this.getAttribute('data-thumbnail'),
+                            title: this.getAttribute('data-title'),
+                            channel: this.getAttribute('data-channel'),
+                            views: this.getAttribute('data-view'),
+                            videoDuration: this.getAttribute('data-duration'),
+                            uploaded: this.getAttribute('data-uploaded'),
+                            "search-value": searchValue,
+                        };
+
                         this.style.display = "none";
                         this.nextElementSibling.style.display = "block";
                         watchLaterArray.push(obj);
